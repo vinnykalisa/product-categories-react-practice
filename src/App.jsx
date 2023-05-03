@@ -1,16 +1,27 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 import React from 'react';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import categoriesFromServer from './api/categories';
-// import productsFromServer from './api/products';
+import usersFromServer from './api/users';
+import categoriesFromServer from './api/categories';
+import productsFromServer from './api/products';
 
-// const products = productsFromServer.map((product) => {
-//   const category = null; // find by product.categoryId
-//   const user = null; // find by category.ownerId
+const products = productsFromServer.map((product) => {
+  const category = categoriesFromServer
+    .find(cat => cat.id === product.categoryId); // find by product.categoryId
+  const user = usersFromServer.find(person => person.id === category.ownerId); // find by category.ownerId
 
-//   return null;
-// });
+  const genderClass = user.sex === 'm'
+    ? 'has-text-link'
+    : 'has-text-danger';
+
+  return {
+    ...product,
+    category,
+    user,
+    genderClass,
+  };
+});
 
 export const App = () => (
   <div className="section">
@@ -192,6 +203,31 @@ export const App = () => (
           </thead>
 
           <tbody>
+            {products.map(product => (
+              <tr data-cy="Product">
+                <td className="has-text-weight-bold" data-cy="ProductId">
+                  {product.id}
+                </td>
+
+                <td data-cy="ProductName">
+                  {product.name}
+                </td>
+
+                <td data-cy="ProductCategory">
+                  {`${product.category.icon} - ${product.category.title}`}
+                </td>
+
+                <td
+                  data-cy="ProductUser"
+                  className={product.genderClass}
+                >
+                  {product.user.name}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+
+          {/* <tbody>
             <tr data-cy="Product">
               <td className="has-text-weight-bold" data-cy="ProductId">
                 1
@@ -239,7 +275,7 @@ export const App = () => (
                 Roma
               </td>
             </tr>
-          </tbody>
+          </tbody> */}
         </table>
       </div>
     </div>
