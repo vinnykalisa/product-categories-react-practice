@@ -28,6 +28,7 @@ const products = productsFromServer.map((product) => {
 export const App = () => {
   const [visibleProducts, setVisibleProducts] = useState(products);
   const [selectedUser, setSelectedUser] = useState(0);
+  const [query, setQuery] = useState('');
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
@@ -42,6 +43,20 @@ export const App = () => {
     setSelectedUser(0);
     setVisibleProducts(products);
   };
+
+  const handleQueryChange = (event) => {
+    setQuery(event.target.value);
+  };
+
+  const formattedQuery = query.trim().toLowerCase();
+
+  const doesProductMatchQuery = (product) => {
+    product.name.toLowerCase().includes(formattedQuery);
+  };
+
+  visibleProducts.filter(product => (
+    doesProductMatchQuery(product)
+  ));
 
   return (
     <div className="section">
@@ -86,7 +101,8 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={handleQueryChange}
                 />
 
                 <span className="icon is-left">
