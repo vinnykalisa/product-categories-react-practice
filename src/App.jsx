@@ -68,6 +68,7 @@ export const App = () => {
                 <a
                   data-cy="FilterUser"
                   href="#/"
+                  key={user.id}
                   className={classNames({
                     'is-active': selectedUser.id === user.id,
                   })}
@@ -221,7 +222,11 @@ export const App = () => {
             <tbody>
               {visibleProducts.map(product => (
                 <tr data-cy="Product">
-                  <td className="has-text-weight-bold" data-cy="ProductId">
+                  <td
+                    className="has-text-weight-bold"
+                    data-cy="ProductId"
+                    key={product.id}
+                  >
                     {product.id}
                   </td>
 
