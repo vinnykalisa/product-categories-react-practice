@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import './App.scss';
@@ -30,10 +30,28 @@ export const App = () => {
   const [selectedUser, setSelectedUser] = useState(0);
   const [query, setQuery] = useState('');
 
+  useEffect(() => {
+    const formattedQuery = query.trim().toLowerCase();
+
+    const doesProductNameMatchesQuery = product => (
+      product.name.toLowerCase().includes(formattedQuery)
+    );
+
+    const filteredProducts = products.filter(product => (
+      doesProductNameMatchesQuery(product)
+    ));
+
+    setVisibleProducts(filteredProducts);
+
+    if (!formattedQuery) {
+      setVisibleProducts(products);
+    }
+  }, [query, products]);
+
   const handleUserClick = (user) => {
     setSelectedUser(user);
 
-    const filteredProducts = products
+    const filteredProducts = visibleProducts
       .filter(product => product.user.id === user.id);
 
     setVisibleProducts(filteredProducts);
@@ -44,19 +62,30 @@ export const App = () => {
     setVisibleProducts(products);
   };
 
-  const handleQueryChange = (event) => {
-    setQuery(event.target.value);
+  const handleQueryChange = event => (
+    setQuery(event.target.value)
+  );
+
+  // const formattedQuery = query.trim().toLowerCase();
+
+  // const doesProductNameMatchesQuery = product => (
+  //   product.name.toLowerCase().includes(formattedQuery)
+  // );
+
+  // const filteredProducts = products.filter(product => (
+  //   doesProductNameMatchesQuery(product)
+  // ));
+
+  // setVisibleProducts(filteredProducts);
+
+  // if (!formattedQuery) {
+  //   setVisibleProducts(products);
+  // }
+
+  const clearQuery = () => {
+    setQuery('');
+    setVisibleProducts(products);
   };
-
-  const formattedQuery = query.trim().toLowerCase();
-
-  const doesProductMatchQuery = (product) => {
-    product.name.toLowerCase().includes(formattedQuery);
-  };
-
-  visibleProducts.filter(product => (
-    doesProductMatchQuery(product)
-  ));
 
   return (
     <div className="section">
@@ -109,14 +138,17 @@ export const App = () => {
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {query && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={clearQuery}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
@@ -162,13 +194,18 @@ export const App = () => {
             </div>
 
             <div className="panel-block">
-              <a
-                data-cy="ResetAllButton"
-                href="#/"
-                className="button is-link is-outlined is-fullwidth"
-              >
-                Reset all filters
-              </a>
+              {(visibleProducts.length)
+                && (
+                <a
+                  data-cy="ResetAllButton"
+                  href="#/"
+                  className="button is-link is-outlined is-fullwidth"
+                >
+                  Reset all filters
+                </a>
+                )
+              }
+
             </div>
           </nav>
         </div>
